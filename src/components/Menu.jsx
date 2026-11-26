@@ -41,7 +41,8 @@ function CakeCard({ cake, index, onAdded }) {
         <h3>{cake.name}</h3>
         <p className="cake-card__desc">{cake.desc}</p>
 
-        {cake.sizes.length > 1 && (
+        {/* Always render the size row (empty for one-size cakes) so cards line up */}
+        {cake.sizes.length > 1 ? (
           <div className="size-pick" role="radiogroup" aria-label={`${cake.name} size`}>
             {cake.sizes.map((s, i) => (
               <button
@@ -55,6 +56,8 @@ function CakeCard({ cake, index, onAdded }) {
               </button>
             ))}
           </div>
+        ) : (
+          <div className="size-pick size-pick--empty" aria-hidden="true" />
         )}
 
         <div className="cake-card__foot">
