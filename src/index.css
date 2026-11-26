@@ -456,13 +456,20 @@ fieldset { border: 0; min-width: 0; }
 .cake-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
-  gap: 2.5rem 1.6rem;
+  gap: 0 1.6rem; /* space between rows of cards comes from .cake-card padding */
   transition: opacity var(--menu-leave) ease, transform var(--menu-leave) ease;
 }
 .cake-grid.is-leaving { opacity: 0; transform: translateY(10px); }
 .cake-card {
-  display: flex;
-  flex-direction: column;
+  /* Each card shares the same 6 row lines as the other cards in its row
+     (frame, note, name, description, sizes, price/button), so everything lines up
+     even when one card's text wraps to more lines. */
+  display: grid;
+  grid-row: span 6;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  padding-bottom: 2.5rem;
+  text-align: center;
   animation: card-in var(--menu-enter) var(--ease) backwards;
   animation-delay: calc(min(var(--i), 8) * var(--menu-stagger));
 }
@@ -479,8 +486,11 @@ fieldset { border: 0; min-width: 0; }
   transition: transform 0.8s var(--ease), box-shadow 0.8s var(--ease);
 }
 .cake-card__frame .cake { transition: transform 0.9s var(--ease), --f-light 0.7s, --f-base 0.7s, --f-dark 0.7s, --drip 0.7s; }
-.cake-card:hover .cake-card__frame { transform: translateY(-6px); box-shadow: 0 26px 40px -28px rgba(59, 42, 35, 0.5); }
-.cake-card:hover .cake-card__frame .cake { transform: scale(1.05); }
+/* Hover lift only on devices with a mouse (phones keep "hover" stuck after a tap) */
+@media (hover: hover) {
+  .cake-card:hover .cake-card__frame { transform: translateY(-6px); box-shadow: 0 26px 40px -28px rgba(59, 42, 35, 0.5); }
+  .cake-card:hover .cake-card__frame .cake { transform: scale(1.05); }
+}
 .cake-card__tag {
   position: absolute;
   top: 14%;
@@ -492,11 +502,11 @@ fieldset { border: 0; min-width: 0; }
   font-size: 0.72rem;
   letter-spacing: 0.04em;
 }
-.cake-card__body { display: flex; flex-direction: column; flex: 1; padding: 1.2rem 0.2rem 0; text-align: center; }
-.cake-card__note { font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+.cake-card__body { display: contents; } /* its children join the card's row lines */
+.cake-card__note { margin-top: 1.2rem; align-self: end; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
 .cake-card h3 { margin: 0.25rem 0 0.4rem; font-family: var(--serif); font-weight: 600; font-size: 1.6rem; line-height: 1.1; }
-.cake-card__desc { flex: 1; margin-bottom: 0.9rem; font-size: 0.92rem; color: var(--muted); }
-.size-pick { display: flex; justify-content: center; gap: 1.2rem; margin-bottom: 0.9rem; }
+.cake-card__desc { margin-bottom: 0.9rem; font-size: 0.92rem; color: var(--muted); }
+.size-pick { display: flex; justify-content: center; align-items: center; gap: 1.2rem; min-height: 36px; margin-bottom: 0.9rem; }
 .size-pick button {
   min-height: 36px;
   padding: 0 0.2rem;
@@ -506,7 +516,12 @@ fieldset { border: 0; min-width: 0; }
   transition: color 0.3s, border-color 0.3s;
 }
 .size-pick button.is-active { color: var(--choco); border-color: var(--choco); }
-.cake-card__foot { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.cake-card__foot { display: flex; align-items: center; justify-content: center; align-self: end; gap: 1rem; flex-wrap: wrap; }
+/* Older browsers without subgrid: simple stacked card */
+@supports not (grid-template-rows: subgrid) {
+  .cake-card { display: flex; flex-direction: column; }
+  .cake-card__foot { margin-top: auto; }
+}
 .price { font-family: var(--serif); font-weight: 600; font-size: 1.5rem; animation: fade-up 0.5s var(--ease); white-space: nowrap; }
 .price small { font-family: var(--sans); font-weight: 400; font-size: 0.8rem; color: var(--muted); }
 @keyframes fade-up { from { opacity: 0; transform: translateY(5px); } }
@@ -893,11 +908,12 @@ fieldset { border: 0; min-width: 0; }
   .hero__sub { font-size: 1rem; margin-bottom: 1.6rem; }
   .hero__cta { flex-wrap: nowrap; margin-bottom: 1.6rem; }
   .hero__cta .btn { flex: 1; padding-inline: 0.9rem; }
-  .cake-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 0.9rem; }
+  .cake-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 0.9rem; }
+  .cake-card { padding-bottom: 2rem; }
   .cake-card__frame .cake { --size: 120px !important; }
   .cake-card h3 { font-size: 1.25rem; }
   .cake-card__desc { display: none; }
-  .cake-card__note { font-size: 0.66rem; letter-spacing: 0.08em; margin-bottom: 0.2rem; }
+  .cake-card__note { font-size: 0.66rem; letter-spacing: 0.08em; margin: 0.9rem 0 0.2rem; }
   .size-pick { gap: 0.7rem; }
   .cake-card__foot { flex-direction: column; gap: 0.5rem; }
   .cake-card__foot .btn { width: 100%; }
