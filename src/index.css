@@ -461,13 +461,10 @@ fieldset { border: 0; min-width: 0; }
 }
 .cake-grid.is-leaving { opacity: 0; transform: translateY(10px); }
 .cake-card {
-  /* Each card shares the same 6 row lines as the other cards in its row
-     (frame, note, name, description, sizes, price/button), so everything lines up
-     even when one card's text wraps to more lines. */
-  display: grid;
-  grid-row: span 6;
-  grid-template-rows: subgrid;
-  row-gap: 0;
+  /* Cards in a row are stretched to the same height; the note and name below get
+     a fixed 2-line space, so every part lines up on any phone or browser. */
+  display: flex;
+  flex-direction: column;
   padding-bottom: 2.5rem;
   text-align: center;
   animation: card-in var(--menu-enter) var(--ease) backwards;
@@ -502,10 +499,29 @@ fieldset { border: 0; min-width: 0; }
   font-size: 0.72rem;
   letter-spacing: 0.04em;
 }
-.cake-card__body { display: contents; } /* its children join the card's row lines */
-.cake-card__note { margin-top: 1.2rem; align-self: end; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
-.cake-card h3 { margin: 0.25rem 0 0.4rem; font-family: var(--serif); font-weight: 600; font-size: 1.6rem; line-height: 1.1; }
-.cake-card__desc { margin-bottom: 0.9rem; font-size: 0.92rem; color: var(--muted); }
+.cake-card__body { display: flex; flex-direction: column; flex: 1; }
+.cake-card__note {
+  /* always 2 lines tall; short notes sit at the bottom, next to the name */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 3em;
+  line-height: 1.5;
+  margin-top: 1rem;
+  font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+.cake-card h3 {
+  /* always 2 lines tall; one-line names are centered in that space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.2em;
+  margin: 0.25rem 0 0.4rem;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+.cake-card__desc { flex: 1; margin-bottom: 0.9rem; font-size: 0.92rem; color: var(--muted); }
 .size-pick { display: flex; justify-content: center; align-items: center; gap: 1.2rem; min-height: 36px; margin-bottom: 0.9rem; }
 .size-pick button {
   min-height: 36px;
@@ -516,12 +532,7 @@ fieldset { border: 0; min-width: 0; }
   transition: color 0.3s, border-color 0.3s;
 }
 .size-pick button.is-active { color: var(--choco); border-color: var(--choco); }
-.cake-card__foot { display: flex; align-items: center; justify-content: center; align-self: end; gap: 1rem; flex-wrap: wrap; }
-/* Older browsers without subgrid: simple stacked card */
-@supports not (grid-template-rows: subgrid) {
-  .cake-card { display: flex; flex-direction: column; }
-  .cake-card__foot { margin-top: auto; }
-}
+.cake-card__foot { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: auto; }
 .price { font-family: var(--serif); font-weight: 600; font-size: 1.5rem; animation: fade-up 0.5s var(--ease); white-space: nowrap; }
 .price small { font-family: var(--sans); font-weight: 400; font-size: 0.8rem; color: var(--muted); }
 @keyframes fade-up { from { opacity: 0; transform: translateY(5px); } }
@@ -914,6 +925,7 @@ fieldset { border: 0; min-width: 0; }
   .cake-card h3 { font-size: 1.25rem; }
   .cake-card__desc { display: none; }
   .cake-card__note { font-size: 0.66rem; letter-spacing: 0.08em; margin: 0.9rem 0 0.2rem; }
+  .cake-card__desc { display: none; }
   .size-pick { gap: 0.7rem; }
   .cake-card__foot { flex-direction: column; gap: 0.5rem; }
   .cake-card__foot .btn { width: 100%; }
